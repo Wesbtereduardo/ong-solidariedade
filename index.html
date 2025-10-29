@@ -9,15 +9,16 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <a href="#conteudo" class="skip-link">Pular para o conteúdo principal</a>
     <header>
         <nav aria-label="Principal">
             <input type="checkbox" id="nav-toggle" class="nav-toggle">
-            <label for="nav-toggle" class="nav-btn" aria-label="Abrir menu">☰</label>
+            <label for="nav-toggle" class="nav-btn" aria-label="Abrir menu" role="button" tabindex="0" aria-controls="primary-menu" aria-expanded="false">☰</label>
             <div class="logo">
                 <h1>🤝 Solidariedade</h1>
             </div>
             <button class="theme-toggle" type="button" aria-label="Alternar tema" aria-pressed="false">☀️ Claro</button>
-            <ul>
+            <ul id="primary-menu">
                 <li><a href="index.html">Início</a></li>
                 <li class="has-submenu">
                   <a href="projetos.html" aria-haspopup="true" aria-expanded="false">Projetos</a>
@@ -33,7 +34,7 @@
     </header>
 <img src="assets/imagens/index.png" alt="Ação social da ONG Esperança Solidária">
 
-    <main>
+    <main id="conteudo" tabindex="-1">
         <section class="hero">
             <h2>Transformando Vidas Através da Solidariedade</h2>
             <p>Somos uma organização sem fins lucrativos dedicada a promover mudanças positivas em comunidades vulneráveis através de projetos sociais, educação e apoio humanitário.</p>
