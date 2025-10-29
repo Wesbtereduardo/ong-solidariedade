@@ -26,6 +26,19 @@
       a.classList.toggle('active', hrefFile === p);
     });
   }
+  function routeFromFile(file){
+    if (file.includes('projetos.html')) return '#/projetos';
+    if (file.includes('cadastro.html')) return '#/cadastro';
+    return '#/home';
+  }
+  function fileFromRoute(route){
+    if ((route||'').startsWith('#/projetos')) return 'projetos.html';
+    if ((route||'').startsWith('#/cadastro')) return 'cadastro.html';
+    return 'index.html';
+  }
+  function setActiveByRoute(route){
+    setActiveNavByPathname(fileFromRoute(route));
+  }
   function bindMenu(){
     const nav = document.querySelector('nav[aria-label="Principal"]');
     const navToggle = document.getElementById('nav-toggle');
@@ -33,16 +46,28 @@
     if (nav && navToggle){
       // Initialize state
       nav.classList.toggle('nav-open', !!navToggle.checked);
+      if (navBtn){ navBtn.setAttribute('aria-expanded', String(!!navToggle.checked)); }
       // Rebind change
       navToggle.onchange = ()=>{
-        nav.classList.toggle('nav-open', !!navToggle.checked);
+        const open = !!navToggle.checked;
+        nav.classList.toggle('nav-open', open);
+        if (navBtn){ navBtn.setAttribute('aria-expanded', String(open)); }
       };
       // Ensure label click toggles reliably
       if (navBtn){
         navBtn.onclick = (e)=>{
           e.preventDefault();
           navToggle.checked = !navToggle.checked;
-          nav.classList.toggle('nav-open', !!navToggle.checked);
+          const open = !!navToggle.checked;
+          nav.classList.toggle('nav-open', open);
+          navBtn.setAttribute('aria-expanded', String(open));
+        };
+        // Keyboard activation (Enter/Space)
+        navBtn.onkeydown = (e)=>{
+          if (e.key === 'Enter' || e.key === ' '){
+            e.preventDefault();
+            navBtn.click();
+          }
         };
       }
     }
@@ -59,6 +84,15 @@
     });
     // Set active link on initial load (both modes)
     setActiveNavByPathname(currentPage());
+    // Bind skip link to focus main content
+    const skip = document.querySelector('.skip-link');
+    if (skip){
+      skip.addEventListener('click', (e)=>{
+        const main = document.getElementById('conteudo');
+        // allow default scroll then focus
+        setTimeout(()=>{ if (main) main.focus(); }, 0);
+      });
+    }
   }
 
   function bindSubmenuKeyboard(){
@@ -136,11 +170,24 @@
   const getPath = (url) => new URL(url, location.origin).pathname.replace(/^\//,'');
 
   async function fetchPage(path){
-    const res = await fetch(path, { cache: 'no-store' });
-    if(!res.ok) throw new Error(`Failed to load ${path}`);
-    const html = await res.text();
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    return doc;
+    const baseDir = location.pathname.replace(/[^/]*$/, ''); // e.g., '/projeto-git/'
+    const parts = location.pathname.split('/').filter(Boolean);
+    const repoRoot = parts.length ? `/${parts[0]}/` : '/';
+    const candidates = [
+      path,
+      baseDir + path,
+      repoRoot + path
+    ];
+    for (const url of candidates){
+      try{
+        const res = await fetch(url, { cache: 'no-store' });
+        if (res.ok){
+          const html = await res.text();
+          return new DOMParser().parseFromString(html, 'text/html');
+        }
+      }catch(_){}
+    }
+    throw new Error(`Failed to load ${path}`);
   }
 
   function swapContent(doc){
@@ -169,29 +216,33 @@
     // If cadastro form is present, ensure page-specific CSS and (re)bind its scripts
     ensureCadastroStyles();
     ensureCadastroBindings();
-    ensureProjectsBindings();
 
-    // Handle in-page anchors after swap (if any hash present)
-    if (location.hash){
-      const target = document.querySelector(location.hash);
-      if (target) target.scrollIntoView({ behavior: 'smooth' });
-    }
+    // Do not use location.hash here because hash may be a route like '#/projetos'
+    // Scrolling to anchors is handled in navigateTo using the explicit 'hash' argument
   }
 
   function ensureCadastroBindings(){
     const form = document.getElementById('cadastroForm');
     if (!form) return;
-    // Dynamically reload cadastro.js to bind listeners to fresh DOM
-    const existing = Array.from(document.scripts).find(s=>s.src.includes('js/cadastro.js'));
-    if (existing){
-      const clone = document.createElement('script');
-      clone.src = 'js/cadastro.js?ts=' + Date.now();
-      clone.defer = true;
-      document.body.appendChild(clone);
-    } else {
+    // If binder is available, just bind to current DOM
+    if (typeof window.__bindCadastro === 'function'){
+      window.__bindCadastro();
+      return;
+    }
+    // Otherwise, load the script once, then bind
+    const alreadyLoaded = Array.from(document.scripts).some(s=> (s.src||'').includes('js/cadastro.js'));
+    if (!alreadyLoaded){
       const s = document.createElement('script');
       s.src = 'js/cadastro.js?ts=' + Date.now();
       s.defer = true;
+      s.onload = ()=>{ if (typeof window.__bindCadastro === 'function') window.__bindCadastro(); };
+      document.body.appendChild(s);
+    } else {
+      // If loaded but binder missing, attempt to load fresh
+      const s = document.createElement('script');
+      s.src = 'js/cadastro.js?ts=' + Date.now();
+      s.defer = true;
+      s.onload = ()=>{ if (typeof window.__bindCadastro === 'function') window.__bindCadastro(); };
       document.body.appendChild(s);
     }
   }
@@ -206,11 +257,14 @@
       const doc = await fetchPage(path);
       swapContent(doc);
       // update active state
-      setActiveNav(path);
-      // update URL and then scroll to hash if provided
-      const newUrl = '/' + path + (hash || '');
-      if (push) history.pushState({ path, hash }, '', newUrl);
-      if (hash){
+      // If we're using hash routing, mark active by route; otherwise by path
+      if (location.hash && location.hash.startsWith('#/')){
+        setActiveByRoute(location.hash);
+      } else {
+        setActiveNav(path);
+      }
+      // Do not change the pathname (avoid 404 on GitHub Pages). Hash controls history.
+      if (hash && !hash.startsWith('#/')){
         const target = document.querySelector(hash);
         if (target) target.scrollIntoView({ behavior: 'smooth' });
       }
@@ -232,44 +286,46 @@
       if (navToggle) navToggle.checked = false;
       return; // default behavior for same-page anchors
     }
-    // Intercept .html internal links
+    // Intercept .html internal links: switch to hash routing to avoid 404 on GitHub Pages
     if (path.endsWith('.html')){
       e.preventDefault();
-      navigateTo(path, true, hash);
+      const file = path.split('/').pop();
+      const route = routeFromFile(file);
+      // Update hash (this triggers hashchange handler)
+      const newHash = route + (hash || '');
+      if (location.hash !== newHash) location.hash = newHash; else {
+        // If already same hash, manually navigate to refresh content
+        navigateTo(fileFromRoute(route), false, hash);
+      }
+      return;
     }
   }
 
-  window.addEventListener('popstate', (e)=>{
-    const path = (e.state && e.state.path) || getPath(location.href);
-    const hash = (e.state && e.state.hash) || location.hash || '';
-    if (path.endsWith('.html')) navigateTo(path, false, hash);
-  });
+  // Hash-based routing to avoid server 404s on GitHub Pages
+  function handleHashRoute(){
+    const full = location.hash || '#/home';
+    // route is like '#/home', '#/projetos', '#/cadastro'
+    const matchRoute = full.match(/^#\/[A-Za-z0-9_-]+/);
+    const route = matchRoute ? matchRoute[0] : '#/home';
+    // optional anchor after the route, e.g., '#/projetos#doar'
+    let anchor = '';
+    const idx = full.indexOf('#', 2); // next '#'
+    if (idx !== -1){ anchor = full.slice(idx); }
+    const file = fileFromRoute(route);
+    setActiveByRoute(route);
+    navigateTo(file, false, anchor);
+  }
+  window.addEventListener('hashchange', handleHashRoute);
 
   document.addEventListener('click', onClick);
   // Initial bind on first load
   bindMenu();
-  ensureProjectsBindings();
+  // On first load, if there is a hash route, load it; else mark active based on current file
+  if (location.hash && location.hash.startsWith('#/')){
+    handleHashRoute();
+  } else {
+    setActiveNavByPathname(currentPage());
+  }
 })();
 
-function ensureProjectsBindings(){
-  try{
-    if (typeof window.__ensureProjects === 'function'){
-      window.__ensureProjects();
-      return;
-    }
-    const alreadyLoaded = Array.from(document.scripts).some(s=> (s.src||'').includes('js/projects.js'));
-    if (!alreadyLoaded){
-      const s = document.createElement('script');
-      s.src = 'js/projects.js?ts=' + Date.now();
-      s.defer = true;
-      s.onload = function(){
-        if (typeof window.__ensureProjects === 'function'){
-          window.__ensureProjects();
-        }
-      };
-      document.body.appendChild(s);
-    }
-  }catch(e){
-    console.error(e);
-  }
-}
+function ensureProjectsBindings(){}

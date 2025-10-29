@@ -1,93 +1,47 @@
-# Entrega III – Interatividade e Funcionalidades
+# Entrega IV – Versionamento, Acessibilidade e Deploy
 
-## Objetivo
-Transformar a interface da Entrega II em uma aplicação dinâmica com JavaScript, adicionando interatividade, melhoria de navegação e usabilidade, mantendo acessibilidade e responsividade.
+## Objetivos
+Consolidar o projeto com práticas profissionais:
+- Controle de versão (Git/GitHub) com estratégia GitFlow e commits semânticos.
+- Acessibilidade em conformidade com WCAG 2.1 Nível AA (teclado, leitores de tela, contraste, alto contraste e modo escuro).
+- Otimização para produção (minificação de HTML/CSS/JS e compressão de imagens).
+- Documentação técnica e deploy em produção.
 
-## Visão Geral
-Projeto estático de ONG fictícia (“Esperança Solidária”) com três páginas:
-- `index.html` — Início, seções de apresentação, impacto e contato.
-- `projetos.html` — Lista de projetos, voluntariado e doações.
-- `cadastro.html` — Formulário de cadastro de voluntário.
+## Estrutura (resumo)
+- `index.html`, `projetos.html`, `cadastro.html`
+- `css/style.css`, `css/cadastro.css`
+- `js/spa.js`, `js/cadastro.js`
+- `assets/imagens/`
 
-Interatividade planejada:
-- Alternância de tema (claro/escuro) via botão `button.theme-toggle`.
-- Suporte a SPA básico (melhoria de navegação) via `js/spa.js`.
-- Comportamentos de formulário no `cadastro.html` via `js/cadastro.js` (máscaras/feedback/armazenamento).
+## GitFlow e Commits
+- Branches: `main` (produção), `develop` (integração), 
+- Conventional Commits: 
 
-Observação: A pasta `js/` está presente, porém sem arquivos no momento. Os HTMLs já referenciam:
-- `js/spa.js`
-- `js/cadastro.js` (apenas em `cadastro.html`)
+## Acessibilidade (WCAG 2.1 AA)
+- Navegação por teclado e gerenciamento de foco em submenu.
+- `aria-*` adequado, `aria-live` para mensagens e `aria-pressed` no botão de tema.
+- Temas: claro, escuro e alto contraste; contraste ≥ 4.5:1.
+- Estados de foco visíveis com `:focus`/`:focus-visible`.
 
-## Como Executar
-- Pré-requisitos: navegador moderno.
-- Execute abrindo `index.html` no navegador.
-- Opcional: usar um servidor local (ex.: Live Server no VS Code) para rotas relativas mais consistentes.
+## Otimização para Produção
+- Minificação de HTML/CSS/JS.
+- Compressão de imagens em `assets/imagens/`.
 
-## Estrutura de Pastas
-- `index.html` — Página inicial e botão de alternância de tema.
-- `projetos.html` — Cards, CTA e doações; inclui script de SPA.
-- `cadastro.html` — Formulário com validações HTML5; inclui `js/cadastro.js` e `js/spa.js`.
-- `css/`
-  - `style.css` — Estilos globais e componentes.
-  - `cadastro.css` — Estilos específicos do formulário.
-- `js/`
-  - `spa.js` — Script previsto para navegação/SPA e alternância de tema.
-  - `cadastro.js` — Script previsto para lógicas do formulário.
-- `assets/`
-  - `imagens/` — Imagens utilizadas nas páginas.
+## Deploy
 
-## Funcionalidades Esperadas (JS)
-- Tema Claro/Escuro:
-  - Botão `.theme-toggle` alterna o tema.
-  - Persistência da escolha do usuário (sugestão: `localStorage`).
-  - Atualização de `aria-pressed` e texto/ícone do botão.
-- Navegação/SPA básica:
-  - Evitar recarregamentos completos quando possível (ex.: interceptar cliques e atualizar conteúdo/estado).
-  - Manter acessibilidade e foco ao trocar de “rota”.
-- Formulário de Cadastro:
-  - Validações já existem via HTML5 (email, CPF, telefone, datas, UF, etc.).
-  - JS pode: aplicar máscara, exibir mensagens de erro amigáveis, validar “pelo menos uma área”, salvar rascunho no `localStorage`, limpar estado ao enviar/resetar.
 
-## Acessibilidade
-- Uso de `aria-label` na navegação e `aria-pressed` no botão de tema.
-- Elementos semânticos (`header`, `main`, `section`, `article`, `footer`).
-- Textos alternativos em imagens.
-- Formulário com `label`, `required`, `pattern`, `title`, `autocomplete`.
+### GitHub Pages
 
-## Responsividade
-- `meta viewport` configurado.
-- Layout fluido e menu colapsável (checkbox/hambúrguer).
-- Cartões e grids adaptáveis.
 
-## Padrões sugeridos para os scripts
-- `js/spa.js`:
-  - Detectar tema salvo (ex.: `localStorage.theme`) e aplicar classe no `documentElement`.
-  - Alternar tema no clique do `.theme-toggle`, atualizar rótulo/ícone e `aria-pressed`, persistir preferência.
-  - Opcional: interceptar navegação interna para SPA simples, atualizar foco e título.
-- `js/cadastro.js`:
-  - Máscaras leves (CPF/telefone) sem dependências ou com validação adicional.
-  - Feedback de erros no blur e no submit.
-  - Salvar rascunho (nome, email, telefone, endereço) e restaurar ao carregar a página.
-  - Limpar rascunho no reset/submit bem-sucedido.
+## Testes de Acessibilidade (WCAG 2.1 AA)
+- Teclado:
+  - Tab no início deve focar o link "Pular para o conteúdo" e levar ao `main`.
+  - Submenu "Projetos": setas para navegar, Esc para voltar o foco.
+- Leitores de tela: verificar `aria-label`, `aria-expanded`, `aria-pressed`, `aria-live`.
+- Contraste: checar temas Claro/Escuro/Alto Contraste com mínimo 4.5:1.
 
-## Critérios de Avaliação (sugeridos)
-- Interatividade funcional (tema, navegação melhorada, formulário).
-- Boas práticas de acessibilidade e UX (foco, aria, feedback).
-- Código JS organizado, sem dependências desnecessárias.
-- Responsividade preservada.
-- Sem erros no console.
+## Como rodar localmente
+- Abrir `index.html` no navegador (ou usar um servidor local, ex.: Live Server).
 
-## Como Personalizar
-- Temas e paleta em `css/style.css`.
-- Campos adicionais no formulário em `cadastro.html` (+ ajustes em `cadastro.css`).
-- Imagens em `assets/imagens/`.
-
-## Roadmap (opcional)
-- Implementar `js/spa.js` (tema + navegação básica).
-- Implementar `js/cadastro.js` (máscaras, feedback, rascunho).
-- Testes de acessibilidade e navegabilidade no teclado.
-- Medir CLS/LCP em dispositivos móveis.
-
-## Autor e Licença
-- Autor: [preencher]
-- Licença: Uso educacional.
+## Documentação
+- Este README descreve objetivos, fluxos de trabalho e critérios da Entrega IV.
