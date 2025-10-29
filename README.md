@@ -1,72 +1,93 @@
-# Entrega II – Estilização e Leiautes
+# Entrega III – Interatividade e Funcionalidades
 
 ## Objetivo
-Aplicar CSS3 para transformar a estrutura HTML da Entrega I em uma interface visual profissional, responsiva e acessível. A entrega demonstra uso de leiautes modernos, sistema de navegação com submenu, tipografia, cores, espaçamentos e boas práticas de acessibilidade.
+Transformar a interface da Entrega II em uma aplicação dinâmica com JavaScript, adicionando interatividade, melhoria de navegação e usabilidade, mantendo acessibilidade e responsividade.
 
-## Visão Geral do Projeto
-Site estático de uma ONG fictícia (“Esperança Solidária”) com três páginas:
-- Página inicial com hero, seções “Sobre”, “Impacto” e “Contato”.
-- Página de Projetos com cards, CTA de voluntariado e seção de doações.
-- Página de Cadastro de Voluntário com formulário validado via HTML5.
+## Visão Geral
+Projeto estático de ONG fictícia (“Esperança Solidária”) com três páginas:
+- `index.html` — Início, seções de apresentação, impacto e contato.
+- `projetos.html` — Lista de projetos, voluntariado e doações.
+- `cadastro.html` — Formulário de cadastro de voluntário.
+
+Interatividade planejada:
+- Alternância de tema (claro/escuro) via botão `button.theme-toggle`.
+- Suporte a SPA básico (melhoria de navegação) via `js/spa.js`.
+- Comportamentos de formulário no `cadastro.html` via `js/cadastro.js` (máscaras/feedback/armazenamento).
+
+Observação: A pasta `js/` está presente, porém sem arquivos no momento. Os HTMLs já referenciam:
+- `js/spa.js`
+- `js/cadastro.js` (apenas em `cadastro.html`)
 
 ## Como Executar
-- Pré-requisitos: nenhum (somente um navegador moderno).
-- Execução:
-  - Abra o arquivo `index.html` diretamente no navegador.
-  - Alternativamente, use uma extensão de servidor local (ex.: Live Server no VS Code) para melhor experiência com caminhos relativos.
+- Pré-requisitos: navegador moderno.
+- Execute abrindo `index.html` no navegador.
+- Opcional: usar um servidor local (ex.: Live Server no VS Code) para rotas relativas mais consistentes.
 
 ## Estrutura de Pastas
-- `index.html` — Página inicial.
-- `projetos.html` — Lista de projetos, como doar e CTA de voluntariado.
-- `cadastro.html` — Formulário de cadastro de voluntário.
+- `index.html` — Página inicial e botão de alternância de tema.
+- `projetos.html` — Cards, CTA e doações; inclui script de SPA.
+- `cadastro.html` — Formulário com validações HTML5; inclui `js/cadastro.js` e `js/spa.js`.
 - `css/`
-  - `style.css` — Estilos globais, navegação, leiaute e componentes.
-  - `cadastro.css` — Estilos específicos do formulário de cadastro.
+  - `style.css` — Estilos globais e componentes.
+  - `cadastro.css` — Estilos específicos do formulário.
+- `js/`
+  - `spa.js` — Script previsto para navegação/SPA e alternância de tema.
+  - `cadastro.js` — Script previsto para lógicas do formulário.
 - `assets/`
-  - `imagens/` — Imagens usadas nas páginas (ex.: `index.png`, `projeto.png`, `cadastro.png`)
+  - `imagens/` — Imagens utilizadas nas páginas.
 
-## Navegação
-- Menu principal com submenu em “Projetos”.
-- Versão mobile com botão hambúrguer controlado por `input[type=checkbox]`.
+## Funcionalidades Esperadas (JS)
+- Tema Claro/Escuro:
+  - Botão `.theme-toggle` alterna o tema.
+  - Persistência da escolha do usuário (sugestão: `localStorage`).
+  - Atualização de `aria-pressed` e texto/ícone do botão.
+- Navegação/SPA básica:
+  - Evitar recarregamentos completos quando possível (ex.: interceptar cliques e atualizar conteúdo/estado).
+  - Manter acessibilidade e foco ao trocar de “rota”.
+- Formulário de Cadastro:
+  - Validações já existem via HTML5 (email, CPF, telefone, datas, UF, etc.).
+  - JS pode: aplicar máscara, exibir mensagens de erro amigáveis, validar “pelo menos uma área”, salvar rascunho no `localStorage`, limpar estado ao enviar/resetar.
 
 ## Acessibilidade
-- `lang="pt-BR"` no `html`.
-- `aria-label` e semântica em `nav`, `main`, `section`, `article`, `footer`.
+- Uso de `aria-label` na navegação e `aria-pressed` no botão de tema.
+- Elementos semânticos (`header`, `main`, `section`, `article`, `footer`).
 - Textos alternativos em imagens.
-- Campos de formulário com `label`, `required`, `pattern`, `title`, `autocomplete` e mensagens de ajuda.
+- Formulário com `label`, `required`, `pattern`, `title`, `autocomplete`.
 
 ## Responsividade
 - `meta viewport` configurado.
-- Grid/cards adaptáveis.
-- Menu colapsável em telas menores.
+- Layout fluido e menu colapsável (checkbox/hambúrguer).
+- Cartões e grids adaptáveis.
 
-## Formulário (cadastro.html)
-- Validações nativas HTML5:
-  - `email`, `cpf` (formato `000.000.000-00`), `telefone` (formato `(00) 00000-0000`).
-  - Data de nascimento com faixa etária (min/max).
-  - Seleção de estado (UFs).
-  - Campos obrigatórios indicados e mensagens de ajuda.
-- Botões: enviar e limpar.
-
-## Páginas
-- `index.html`:
-  - Hero com CTA “Seja um Voluntário”.
-  - Seções “Sobre Nós”, “Nosso Impacto” (indicadores) e “Contato”.
-- `projetos.html`:
-  - Cards de projetos com tags e impactos.
-  - Seção “Como Ser Voluntário” com passos.
-  - Seção “Como Doar” com métodos de doação.
-- `cadastro.html`:
-  - Formulário completo com fieldsets: Dados Pessoais, Endereço, Voluntariado e Termos.
-
-## Como Personalizar
-- Cores, tipografia e espaçamentos: ajuste em `css/style.css`.
-- Campos do formulário: edite `cadastro.html` e, se necessário, `css/cadastro.css`.
-- Imagens: substitua arquivos em `assets/imagens/` mantendo os nomes ou atualize os `src`.
+## Padrões sugeridos para os scripts
+- `js/spa.js`:
+  - Detectar tema salvo (ex.: `localStorage.theme`) e aplicar classe no `documentElement`.
+  - Alternar tema no clique do `.theme-toggle`, atualizar rótulo/ícone e `aria-pressed`, persistir preferência.
+  - Opcional: interceptar navegação interna para SPA simples, atualizar foco e título.
+- `js/cadastro.js`:
+  - Máscaras leves (CPF/telefone) sem dependências ou com validação adicional.
+  - Feedback de erros no blur e no submit.
+  - Salvar rascunho (nome, email, telefone, endereço) e restaurar ao carregar a página.
+  - Limpar rascunho no reset/submit bem-sucedido.
 
 ## Critérios de Avaliação (sugeridos)
-- Organização e clareza do CSS.
-- Layout responsivo e consistente.
-- Acessibilidade básica (labels, alt, semântica).
-- Validações HTML5 corretas.
-- Navegação funcional, inclusive no mobile.
+- Interatividade funcional (tema, navegação melhorada, formulário).
+- Boas práticas de acessibilidade e UX (foco, aria, feedback).
+- Código JS organizado, sem dependências desnecessárias.
+- Responsividade preservada.
+- Sem erros no console.
+
+## Como Personalizar
+- Temas e paleta em `css/style.css`.
+- Campos adicionais no formulário em `cadastro.html` (+ ajustes em `cadastro.css`).
+- Imagens em `assets/imagens/`.
+
+## Roadmap (opcional)
+- Implementar `js/spa.js` (tema + navegação básica).
+- Implementar `js/cadastro.js` (máscaras, feedback, rascunho).
+- Testes de acessibilidade e navegabilidade no teclado.
+- Medir CLS/LCP em dispositivos móveis.
+
+## Autor e Licença
+- Autor: [preencher]
+- Licença: Uso educacional.
