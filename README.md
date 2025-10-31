@@ -15,7 +15,7 @@ Consolidar o projeto com práticas profissionais:
 
 ## GitFlow e Commits
 - Branches: `main` (produção), `develop` (integração), 
-- Conventional Commits: 
+- Conventional Commits: html , html-css , html-css-js 
 
 ## Acessibilidade (WCAG 2.1 AA)
 - Navegação por teclado e gerenciamento de foco em submenu.
@@ -28,10 +28,38 @@ Consolidar o projeto com práticas profissionais:
 - Compressão de imagens em `assets/imagens/`.
 
 ## Deploy
-
+1s
+Current runner version: '2.328.0'
+Runner Image Provisioner
+Operating System
+Runner Image
+GITHUB_TOKEN Permissions
+Secret source: Actions
+Prepare workflow directory
+Prepare all required actions
+Getting action download info
+Download action repository 'actions/deploy-pages@v4' (SHA:d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e)
+Complete job name: deploy
+7s
+Run actions/deploy-pages@v4
+Fetching artifact metadata for "github-pages" in this workflow run
+Found 1 artifact(s)
+Creating Pages deployment with payload:
+{
+	"artifact_id": 4411811403,
+	"pages_build_version": "77aea569e8c0be98cd8adb79b833823c75d6ab8c",
+	"oidc_token": "***"
+}
+Created deployment for 77aea569e8c0be98cd8adb79b833823c75d6ab8c, ID: 77aea569e8c0be98cd8adb79b833823c75d6ab8c
+Getting Pages deployment status...
+Reported success!
+0s
+Evaluate and set environment url
+Evaluated environment url: https://wesbtereduardo.github.io/ong-solidariedade/
+Cleaning up orphan proces
 
 ### GitHub Pages
-
+https://wesbtereduardo.github.io/ong-solidariedade/
 
 ## Testes de Acessibilidade (WCAG 2.1 AA)
 - Teclado:
@@ -42,6 +70,5 @@ Consolidar o projeto com práticas profissionais:
 
 ## Como rodar localmente
 - Abrir `index.html` no navegador (ou usar um servidor local, ex.: Live Server).
-
 ## Documentação
 - Este README descreve objetivos, fluxos de trabalho e critérios da Entrega IV.
